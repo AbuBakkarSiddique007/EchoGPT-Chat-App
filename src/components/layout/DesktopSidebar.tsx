@@ -13,9 +13,12 @@ import {
   MessageCircle,
   Plus,
   Plug,
+  Settings,
   Store,
+  SunMoon,
   Terminal,
   Crown,
+  UserRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -25,33 +28,46 @@ import { cn } from "@/lib/utils";
 
 type NavItem = {
   label: string;
+  /** Shorter form shown in the drawer on narrow viewports. */
+  compact?: string;
   icon: LucideIcon;
   badge?: "Pro";
   active?: boolean;
 };
 
 const ENGAGEMENT: NavItem[] = [
-  { label: "Image Studio", icon: ImageIcon, badge: "Pro" },
-  { label: "Video Studio", icon: Clapperboard, badge: "Pro" },
+  { label: "Image Studio", compact: "Images", icon: ImageIcon, badge: "Pro" },
+  { label: "Video Studio", compact: "Videos", icon: Clapperboard, badge: "Pro" },
   { label: "Compare", icon: GitCompare },
   { label: "Connectors", icon: Plug },
   { label: "History", icon: History, active: true },
   { label: "Store", icon: Store },
-  { label: "AI Tasks", icon: ListTodo },
-  { label: "AI Job Analysis", icon: Briefcase },
-  { label: "AI SOP Builder", icon: FileText },
+  { label: "AI Tasks", compact: "Tasks", icon: ListTodo },
+  { label: "AI Job Analysis", compact: "Job Analysis", icon: Briefcase },
+  { label: "AI SOP Builder", compact: "SOP Builder", icon: FileText },
 ];
 
 const SUPPORT: NavItem[] = [
   { label: "Support", icon: LifeBuoy },
   { label: "Newsletter", icon: Mail },
   { label: "Subscriptions", icon: CreditCard },
-  { label: "API Platform", icon: Terminal },
+  { label: "API Platform", compact: "API", icon: Terminal },
   { label: "Discord", icon: MessageCircle },
 ];
 
+function NavLabel({ label, compact }: { label: string; compact?: string }) {
+  if (!compact) return <span className="min-w-0 flex-1 truncate">{label}</span>;
+
+  return (
+    <span className="min-w-0 flex-1 truncate">
+      <span className="sm:hidden">{compact}</span>
+      <span className="hidden sm:inline">{label}</span>
+    </span>
+  );
+}
+
 function NavRow({ item }: { item: NavItem }) {
-  const { label, icon: Icon, badge, active } = item;
+  const { label, compact, icon: Icon, badge, active } = item;
 
 
   if (!active) {
@@ -63,7 +79,7 @@ function NavRow({ item }: { item: NavItem }) {
         className="focus-ring group flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm text-fg-2 opacity-60 transition-colors"
       >
         <Icon className="size-4 shrink-0" aria-hidden="true" />
-        <span className="min-w-0 flex-1 truncate">{label}</span>
+        <NavLabel label={label} compact={compact} />
         {badge ? (
           <span className="shrink-0 rounded-full border border-brand/40 bg-brand/10 px-1.5 py-px text-[10px] font-medium tracking-wide text-brand-text">
             {badge}
@@ -82,7 +98,7 @@ function NavRow({ item }: { item: NavItem }) {
       className="focus-ring flex w-full items-center gap-2.5 rounded-md bg-brand/15 px-2.5 py-2 text-left text-sm font-medium text-fg ring-1 ring-inset ring-brand/35 transition-colors hover:bg-brand/20"
     >
       <Icon className="size-4 shrink-0 text-brand-text" aria-hidden="true" />
-      <span className="min-w-0 flex-1 truncate">{label}</span>
+      <NavLabel label={label} compact={compact} />
       <span className="sr-only">(current workspace)</span>
     </button>
   );
@@ -105,24 +121,96 @@ function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
   );
 }
 
+const USAGE_USED = 18;
+const USAGE_LIMIT = 50;
+const PRO_PITCH = "38+ frontier models, priority routing, and longer context.";
+
+function UsageSummary() {
+  const pct = Math.round((USAGE_USED / USAGE_LIMIT) * 100);
+
+  return (
+    <div className="mx-2 mb-1.5 flex items-center gap-2 rounded-lg border border-line bg-surface/40 px-2.5 py-2">
+      <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-fg-dim">
+        Usage
+      </span>
+      {/* The count carries the state; colour is not the only signal. */}
+      <div
+        role="img"
+        aria-label={`${USAGE_USED} of ${USAGE_LIMIT} messages used this month`}
+        className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-line"
+      >
+        <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
+      </div>
+      <span className="shrink-0 text-[11px] tabular-nums text-fg-2">
+        {USAGE_USED}/{USAGE_LIMIT}
+      </span>
+    </div>
+  );
+}
+
 function ProCard() {
   return (
-    <div className="mx-2 mb-2 rounded-xl border border-brand/30 bg-[linear-gradient(145deg,rgba(118,80,236,0.22),rgba(73,121,251,0.10))] p-3">
-      <div className="flex items-center gap-1.5 text-brand-text">
-        <Crown className="size-3.5" aria-hidden="true" />
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em]">Unlock Pro</span>
-      </div>
-      <p className="mt-1.5 text-xs leading-relaxed text-fg-2">
-        38+ frontier models, priority routing, and longer context.
-      </p>
+    <div
+      className="mx-2 mb-1.5 flex items-center gap-2 rounded-lg border border-brand/30 bg-[linear-gradient(145deg,rgba(118,80,236,0.22),rgba(73,121,251,0.10))] px-2.5 py-2"
+      title={PRO_PITCH}
+    >
+      <Crown className="size-3.5 shrink-0 text-brand-text" aria-hidden="true" />
+      <span className="min-w-0 flex-1 truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-text">
+        Unlock Pro
+      </span>
       <button
         type="button"
         aria-disabled="true"
-        className="focus-ring mt-2.5 flex w-full cursor-not-allowed items-center justify-center gap-1 rounded-md bg-brand/40 py-1.5 text-xs font-medium text-fg opacity-70"
+        title={`Upgrade — coming soon. ${PRO_PITCH}`}
+        className="focus-ring flex shrink-0 cursor-not-allowed items-center gap-0.5 rounded-md bg-brand/40 px-2 py-1 text-[11px] font-medium text-fg opacity-70"
       >
         Upgrade
         <ArrowUpRight className="size-3" aria-hidden="true" />
         <span className="sr-only">— coming soon</span>
+      </button>
+      <span className="sr-only">{PRO_PITCH}</span>
+    </div>
+  );
+}
+
+function SidebarFooter() {
+  return (
+    <div className="flex items-center gap-1 border-t border-line px-2 py-1.5">
+      <button
+        type="button"
+        aria-disabled="true"
+        title="Sign in — coming soon"
+        className="focus-ring flex min-w-0 flex-1 cursor-not-allowed items-center gap-2 rounded-md px-1.5 py-1.5 text-left transition-colors hover:bg-brand/5"
+      >
+        <span
+          className="flex size-6 shrink-0 items-center justify-center rounded-full border border-line bg-surface-2"
+          aria-hidden="true"
+        >
+          <UserRound className="size-3 text-fg-2" />
+        </span>
+        <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-fg">
+          Guest
+        </span>
+        <span className="sr-only">sign in to sync history — coming soon</span>
+      </button>
+
+      <button
+        type="button"
+        aria-disabled="true"
+        title="Theme — coming soon"
+        className="focus-ring flex size-7 shrink-0 cursor-not-allowed items-center justify-center rounded-md text-fg-2 transition-colors hover:bg-brand/5"
+      >
+        <SunMoon className="size-3.5" aria-hidden="true" />
+        <span className="sr-only">Theme — coming soon</span>
+      </button>
+      <button
+        type="button"
+        aria-disabled="true"
+        title="Settings — coming soon"
+        className="focus-ring flex size-7 shrink-0 cursor-not-allowed items-center justify-center rounded-md text-fg-2 transition-colors hover:bg-brand/5"
+      >
+        <Settings className="size-3.5" aria-hidden="true" />
+        <span className="sr-only">Settings — coming soon</span>
       </button>
     </div>
   );
@@ -160,7 +248,12 @@ export function SidebarContent({ className }: { className?: string }) {
         <NavGroup title={"Help & Support"} items={SUPPORT} />
       </ScrollArea>
 
-      <ProCard />
+      {/* pb-safe keeps the footer clear of the home indicator inside the drawer. */}
+      <div className="pb-safe">
+        <UsageSummary />
+        <ProCard />
+        <SidebarFooter />
+      </div>
     </nav>
   );
 }
