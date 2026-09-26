@@ -2,7 +2,7 @@ import { ArrowUp, Paperclip, SlidersHorizontal } from "lucide-react";
 
 export function ComposerPlaceholder() {
   return (
-    <div className="w-full rounded-2xl border border-brand/45 bg-input/80 shadow-[0_0_28px_-10px_var(--echo-brand-glow)] backdrop-blur-sm">
+    <div className="w-full rounded-2xl border border-brand/45 bg-composer/80 shadow-[0_0_28px_-10px_var(--echo-brand-glow)] backdrop-blur-sm">
       <div className="flex items-end gap-2 p-2.5">
         <div className="flex min-w-0 flex-1 items-center gap-2 px-1 py-2">
           <span className="text-[15px] leading-6 text-fg-dim">Message EchoGPT…</span>

@@ -1,5 +1,23 @@
+/*
+ * EchoGPT chat app design tokens.
+ *
+ * Values are copied verbatim from the landing page
+ * (EchoGPT/EchoGPT_Landing_Page/src/styles/tokens.css) so both apps stay
+ * on-brand. Do NOT take hex values from the PRD tables: the prose specs are
+ * stale (they still say #7C3AED and #09080E).
+ *
+ * This file must stay @import-free and self-contained.
+ *
+ * Radius note: the explicit --radius-* scale below is the single source of
+ * truth. Do NOT also declare a --radius-* scale in globals.css `@theme` —
+ * this block is unlayered and would win the cascade anyway, leaving the
+ * @theme values dead. `--radius` exists only because shadcn's base-nova
+ * primitives reference it.
+ */
 
 :root {
+  color-scheme: dark;
+
   --echo-brand-50: #f5f3ff;
   --echo-brand-100: #ede9fe;
   --echo-brand-200: #ddd6fe;
@@ -49,6 +67,8 @@
   --code-bg: #0c0b14;
   --code-foreground: #e2e8f0;
 
+  /* Referenced by shadcn base-nova primitives. */
+  --radius: 0.625rem;
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -60,4 +80,100 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.55);
   --shadow-glow: 0 0 24px -2px rgba(118, 80, 236, 0.45);
+
+  /* Focus treatment, shared by the .focus-ring utility and the ring token. */
+  --focus-ring-color: var(--echo-brand-400);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Mobile safe areas for the sticky composer (Part 10). */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+
+  --text-display-xl: 2.25rem;
+  --text-display-lg: 1.75rem;
+  --text-title-md: 1.25rem;
+  --text-body-lg: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-overline: 0.6875rem;
+  --text-leading-display: 1.2;
+  --text-leading-body: 1.5;
+  --text-tracking-display: -0.02em;
+  --text-tracking-overline: 0.08em;
+
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono-stack: "JetBrains Mono", ui-monospace, monospace;
+
+  --scrollbar-size: 8px;
+  --scrollbar-thumb: color-mix(in srgb, var(--echo-brand-400) 55%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--echo-brand-400) 80%, transparent);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --echo-aura-violet: rgba(118, 80, 236, 0.06);
+  --echo-aura-azure: rgba(73, 121, 251, 0.05);
+  --echo-aura-magenta: rgba(247, 48, 110, 0.025);
+  --dot-grid: rgba(15, 23, 42, 0.06);
+
+  --bg-app: #f8fafc;
+  --bg-sidebar: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-surface-elev: #f8faff;
+  --bg-input: #ffffff;
+  --bg-hover: rgba(118, 80, 236, 0.06);
+  --bg-active: rgba(118, 80, 236, 0.12);
+
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-glow: rgba(118, 80, 236, 0.3);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-dim: #cbd5e1;
+  --text-accent: #7650ec;
+
+  --code-bg: #0f172a;
+  --code-foreground: #e2e8f0;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 0 24px -2px rgba(118, 80, 236, 0.25);
+
+  --scrollbar-thumb: color-mix(in srgb, var(--echo-brand-600) 35%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--echo-brand-600) 55%, transparent);
+}
+
+[data-theme="oled"] {
+  color-scheme: dark;
+
+  --echo-aura-violet: rgba(118, 80, 236, 0.25);
+  --echo-aura-azure: rgba(73, 121, 251, 0.18);
+  --echo-aura-magenta: rgba(247, 48, 110, 0.08);
+  --dot-grid: rgba(255, 255, 255, 0.045);
+
+  --bg-app: #000000;
+  --bg-sidebar: #050508;
+  --bg-surface: #0a0a0f;
+  --bg-surface-elev: #101016;
+  --bg-input: #0d0d14;
+  --bg-hover: rgba(139, 92, 246, 0.12);
+  --bg-active: rgba(139, 92, 246, 0.22);
+
+  --border-subtle: #1a1924;
+  --border-strong: #2e2b40;
+  --border-glow: rgba(139, 92, 246, 0.5);
+
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-dim: #3f3f46;
+  --text-accent: #c4b5fd;
+
+  --code-bg: #000000;
+  --code-foreground: #e2e8f0;
 }
