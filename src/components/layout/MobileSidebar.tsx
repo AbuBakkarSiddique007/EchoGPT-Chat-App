@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, Plus } from "lucide-react";
 
 import { SidebarContent } from "@/components/layout/DesktopSidebar";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
 
 export function MobileSidebar() {
     return (
-        <div className="flex shrink-0 items-center border-b border-line bg-sidebar/80 px-3 py-2.5 lg:hidden">
+        <div className="flex shrink-0 items-center gap-1 border-b border-line bg-sidebar/80 px-2 pt-safe pb-2 lg:hidden">
             <Sheet>
                 <SheetTrigger
                     render={
@@ -41,7 +41,18 @@ export function MobileSidebar() {
                 </SheetContent>
             </Sheet>
 
-            <span className="ml-2 text-sm font-semibold tracking-tight text-fg">EchoGPT</span>
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-fg">
+                EchoGPT
+            </span>
+
+            <Button
+                variant="ghost"
+                size="icon"
+                aria-label="New chat"
+                className="text-fg-2 hover:bg-brand/10 hover:text-fg"
+            >
+                <Plus className="size-5" aria-hidden="true" />
+            </Button>
         </div>
     );
 }
