@@ -13,7 +13,6 @@ const STARTERS: Starter[] = [
   { label: "Debug this stack trace", icon: Code },
 ];
 
-
 export function PromptStarters() {
   return (
     <ul className="-mx-4 flex w-full max-w-full gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0">

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowUpRight,
   Briefcase,
@@ -23,12 +25,13 @@ import {
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { ConversationList } from "@/components/layout/ConversationList";
+import { useChatStore } from "@/components/providers/ChatProvider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
   label: string;
-  /** Shorter form shown in the drawer on narrow viewports. */
   compact?: string;
   icon: LucideIcon;
   badge?: "Pro";
@@ -68,7 +71,6 @@ function NavLabel({ label, compact }: { label: string; compact?: string }) {
 
 function NavRow({ item }: { item: NavItem }) {
   const { label, compact, icon: Icon, badge, active } = item;
-
 
   if (!active) {
     return (
@@ -133,7 +135,6 @@ function UsageSummary() {
       <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-fg-dim">
         Usage
       </span>
-      {/* The count carries the state; colour is not the only signal. */}
       <div
         role="img"
         aria-label={`${USAGE_USED} of ${USAGE_LIMIT} messages used this month`}
@@ -216,8 +217,9 @@ function SidebarFooter() {
   );
 }
 
-
 export function SidebarContent({ className }: { className?: string }) {
+  const { startNewChat } = useChatStore();
+
   return (
     <nav
       aria-label="EchoGPT sections"
@@ -236,6 +238,7 @@ export function SidebarContent({ className }: { className?: string }) {
       <div className="px-2 pb-1">
         <button
           type="button"
+          onClick={startNewChat}
           className="focus-ring flex w-full items-center gap-2 rounded-md bg-brand px-3 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_-4px_var(--echo-brand-glow)] transition-colors hover:bg-brand-hover"
         >
           <Plus className="size-4 shrink-0" aria-hidden="true" />
@@ -245,10 +248,10 @@ export function SidebarContent({ className }: { className?: string }) {
 
       <ScrollArea className="sidebar-scrollbar min-h-0 flex-1 pb-2">
         <NavGroup title="Engagement" items={ENGAGEMENT} />
+        <ConversationList />
         <NavGroup title={"Help & Support"} items={SUPPORT} />
       </ScrollArea>
 
-      {/* pb-safe keeps the footer clear of the home indicator inside the drawer. */}
       <div className="pb-safe">
         <UsageSummary />
         <ProCard />

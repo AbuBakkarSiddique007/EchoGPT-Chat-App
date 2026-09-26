@@ -3,6 +3,7 @@
 import { Menu, Plus } from "lucide-react";
 
 import { SidebarContent } from "@/components/layout/DesktopSidebar";
+import { useChatStore } from "@/components/providers/ChatProvider";
 import { Button } from "@/components/ui/button";
 import {
     Sheet,
@@ -13,6 +14,8 @@ import {
 } from "@/components/ui/sheet";
 
 export function MobileSidebar() {
+    const { startNewChat } = useChatStore();
+
     return (
         <div className="flex shrink-0 items-center gap-1 border-b border-line bg-sidebar/80 px-2 pt-safe pb-2 lg:hidden">
             <Sheet>
@@ -48,6 +51,7 @@ export function MobileSidebar() {
             <Button
                 variant="ghost"
                 size="icon"
+                onClick={startNewChat}
                 aria-label="New chat"
                 className="text-fg-2 hover:bg-brand/10 hover:text-fg"
             >

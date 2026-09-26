@@ -6,10 +6,12 @@ import { CapabilityCards } from "@/components/chat/CapabilityCards";
 import { ComposerPlaceholder } from "@/components/chat/ComposerPlaceholder";
 import { EmptyChatState } from "@/components/chat/EmptyChatState";
 import { PromptStarters } from "@/components/chat/PromptStarters";
+import { ChatProvider } from "@/components/providers/ChatProvider";
 
 export default function Home() {
   return (
-    <AppFrame>
+    <ChatProvider>
+      <AppFrame>
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <DesktopSidebar />
 
@@ -29,5 +31,6 @@ export default function Home() {
         </main>
       </div>
     </AppFrame>
+    </ChatProvider>
   );
 }

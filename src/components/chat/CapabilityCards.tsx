@@ -28,7 +28,6 @@ const CAPABILITIES: Capability[] = [
   },
 ];
 
-
 export function CapabilityCards() {
   return (
     <section aria-label="More capabilities" className="mx-auto w-full max-w-[800px] px-4 pb-6 sm:px-6 lg:pb-8">
