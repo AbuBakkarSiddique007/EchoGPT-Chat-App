@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-
 export function AppFrame({ children }: { children: ReactNode }) {
   return (
     <div className="app-atmosphere relative flex h-dvh max-h-dvh w-full flex-col overflow-hidden">
