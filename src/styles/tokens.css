@@ -1,0 +1,63 @@
+
+:root {
+  --echo-brand-50: #f5f3ff;
+  --echo-brand-100: #ede9fe;
+  --echo-brand-200: #ddd6fe;
+  --echo-brand-300: #c4b5fd;
+  --echo-brand-400: #a78bfa;
+  --echo-brand-500: #8b5cf6;
+  --echo-brand-600: #7650ec;
+  --echo-brand-700: #5b21b6;
+  --echo-brand-800: #4c1d95;
+  --echo-brand-900: #1e1b4b;
+  --echo-brand-glow: rgba(118, 80, 236, 0.35);
+  --echo-violet: #7650ec;
+  --echo-azure: #4979fb;
+  --echo-aurora-magenta: #f7306e;
+  --echo-aurora-cyan: #00aeff;
+  --echo-aurora-pink: #eb78f9;
+  --echo-aurora-amber: #f1a455;
+
+  --echo-gradient-primary: linear-gradient(135deg, #7650ec 0%, #4979fb 50%, #00aeff 100%);
+  --echo-gradient-subtle: linear-gradient(180deg, rgba(118, 80, 236, 0.12) 0%, rgba(15, 14, 24, 0) 100%);
+  --echo-gradient-card: linear-gradient(145deg, rgba(32, 29, 54, 0.6) 0%, rgba(17, 15, 28, 0.8) 100%);
+  --echo-gradient-glow: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
+
+  --echo-aura-violet: rgba(118, 80, 236, 0.2);
+  --echo-aura-azure: rgba(73, 121, 251, 0.14);
+  --echo-aura-magenta: rgba(247, 48, 110, 0.07);
+  --dot-grid: rgba(255, 255, 255, 0.05);
+
+  --bg-app: #0a0713;
+  --bg-sidebar: #0e0a1a;
+  --bg-surface: #141023;
+  --bg-surface-elev: #181330;
+  --bg-input: #171230;
+  --bg-hover: rgba(139, 92, 246, 0.1);
+  --bg-active: rgba(139, 92, 246, 0.2);
+
+  --border-subtle: #251d42;
+  --border-strong: #372a61;
+  --border-glow: rgba(139, 92, 236, 0.4);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-dim: #475569;
+  --text-accent: #a78bfa;
+
+  --code-bg: #0c0b14;
+  --code-foreground: #e2e8f0;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 24px -2px rgba(118, 80, 236, 0.45);
+}
