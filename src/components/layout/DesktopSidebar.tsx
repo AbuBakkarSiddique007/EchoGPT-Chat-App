@@ -65,7 +65,7 @@ function NavRow({ item }: { item: NavItem }) {
         <Icon className="size-4 shrink-0" aria-hidden="true" />
         <span className="min-w-0 flex-1 truncate">{label}</span>
         {badge ? (
-          <span className="shrink-0 rounded-full border border-brand/40 bg-brand/10 px-1.5 py-px text-[10px] font-medium tracking-wide text-accent">
+          <span className="shrink-0 rounded-full border border-brand/40 bg-brand/10 px-1.5 py-px text-[10px] font-medium tracking-wide text-brand-text">
             {badge}
           </span>
         ) : (
@@ -81,7 +81,7 @@ function NavRow({ item }: { item: NavItem }) {
       aria-current="page"
       className="focus-ring flex w-full items-center gap-2.5 rounded-md bg-brand/15 px-2.5 py-2 text-left text-sm font-medium text-fg ring-1 ring-inset ring-brand/35 transition-colors hover:bg-brand/20"
     >
-      <Icon className="size-4 shrink-0 text-accent" aria-hidden="true" />
+      <Icon className="size-4 shrink-0 text-brand-text" aria-hidden="true" />
       <span className="min-w-0 flex-1 truncate">{label}</span>
       <span className="sr-only">(current workspace)</span>
     </button>
@@ -108,7 +108,7 @@ function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
 function ProCard() {
   return (
     <div className="mx-2 mb-2 rounded-xl border border-brand/30 bg-[linear-gradient(145deg,rgba(118,80,236,0.22),rgba(73,121,251,0.10))] p-3">
-      <div className="flex items-center gap-1.5 text-accent">
+      <div className="flex items-center gap-1.5 text-brand-text">
         <Crown className="size-3.5" aria-hidden="true" />
         <span className="text-[11px] font-semibold uppercase tracking-[0.08em]">Unlock Pro</span>
       </div>

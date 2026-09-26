@@ -24,7 +24,7 @@ const CAPABILITIES: Capability[] = [
     title: "Dev Assistant",
     description: "Explain errors and review a diff.",
     icon: Code,
-    accent: "text-accent",
+    accent: "text-brand-text",
   },
 ];
 

@@ -23,6 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      data-theme="dark"
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >

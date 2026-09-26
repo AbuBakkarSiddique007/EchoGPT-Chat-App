@@ -1,42 +1,160 @@
 @import "../styles/tokens.css";
 @import "tailwindcss";
 
+/*
+ * Imported by relative path on purpose. tw-animate-css@1.4.0 ships an exports
+ * map with only a "style" condition and no "default"/"import", so the bare
+ * specifier `tw-animate-css` resolves under webpack (`next build`) but fails
+ * under Turbopack (`next dev`) with "Can't resolve 'tw-animate-css'".
+ * A filesystem path bypasses the exports map and works in both.
+ *
+ * This must stay an @import inside the Tailwind pipeline, NOT a CSS import in
+ * layout.tsx: the file contains @theme / @utility / @property directives that
+ * only @tailwindcss/postcss can process. It must also stay after "tailwindcss".
+ */
+@import "../../node_modules/tw-animate-css/dist/tw-animate.css";
+
+/*
+ * Dark is the default theme, so the `dark:` variant keys off an explicit
+ * data-theme="dark" that layout.tsx puts on <html>. Keeping it explicit (rather
+ * than relying on the attribute's absence) is what makes base-ui's dark:
+ * utilities resolve. Part 15 adds the control that swaps this attribute.
+ */
+@custom-variant dark (&:is([data-theme="dark"] *));
+
 @theme inline {
+  /* EchoGPT tokens */
   --color-app: var(--bg-app);
-  --color-sidebar: var(--bg-sidebar);
   --color-surface: var(--bg-surface);
   --color-surface-2: var(--bg-surface-elev);
-  --color-input: var(--bg-input);
+  --color-composer: var(--bg-input);
   --color-line: var(--border-subtle);
   --color-line-strong: var(--border-strong);
 
   --color-brand: var(--echo-brand-600);
   --color-brand-hover: var(--echo-brand-500);
   --color-brand-soft: var(--echo-brand-400);
+  --color-brand-text: var(--text-accent);
   --color-azure: var(--echo-azure);
   --color-aurora-magenta: var(--echo-aurora-magenta);
   --color-aurora-cyan: var(--echo-aurora-cyan);
+  --color-aurora-pink: var(--echo-aurora-pink);
+  --color-aurora-amber: var(--echo-aurora-amber);
 
   --color-fg: var(--text-primary);
   --color-fg-2: var(--text-secondary);
   --color-fg-3: var(--text-muted);
   --color-fg-dim: var(--text-dim);
-  --color-accent: var(--text-accent);
+
+  /* shadcn semantic layer. Every value forwards to an --echo-* token, so the
+     three themes switch by redefining the tokens in tokens.css alone. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
   --font-sans: var(--font-plus-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
 }
 
-html,
-body {
-  margin: 0;
-  min-height: 100%;
-  overflow: hidden;
-  background-color: var(--bg-app);
-  color: var(--text-primary);
+:root {
+  --background: var(--bg-app);
+  --foreground: var(--text-primary);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface-elev);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--echo-brand-600);
+  --primary-foreground: #ffffff;
+  --secondary: var(--bg-surface-elev);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-surface);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--bg-active);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--echo-aurora-magenta);
+  --destructive-foreground: #ffffff;
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: var(--echo-azure);
+  --chart-1: var(--echo-brand-600);
+  --chart-2: var(--echo-azure);
+  --chart-3: var(--echo-aurora-magenta);
+  --chart-4: var(--echo-aurora-cyan);
+  --chart-5: var(--echo-aurora-pink);
+  --sidebar: var(--bg-sidebar);
+  --sidebar-foreground: var(--text-secondary);
+  --sidebar-primary: var(--echo-brand-600);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--bg-active);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border-subtle);
+  --sidebar-ring: var(--echo-azure);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-feature-settings: "ss01", "cv01";
+  }
+
+  /* Honour the OS reduced-motion setting: no entrance, drawer, or streaming
+     animation may run. Part 12 relies on this for its acceptance check. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer utilities {
+  /* Full-viewport violet-lavender atmosphere behind the app frame. */
   .app-atmosphere {
     background-color: var(--bg-app);
     background-image:
@@ -51,50 +169,64 @@ body {
     background-position: center;
   }
 
-  .sidebar-scrollbar {
-    scrollbar-color: color-mix(in srgb, var(--echo-brand-400) 55%, transparent) transparent;
-    scrollbar-width: thin;
-  }
-
-  .sidebar-scrollbar::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .sidebar-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .sidebar-scrollbar::-webkit-scrollbar-thumb {
-    border: 2px solid transparent;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--echo-brand-400) 55%, transparent);
-    background-clip: padding-box;
-  }
-
-  .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in srgb, var(--echo-brand-400) 80%, transparent);
-    background-clip: padding-box;
-  }
-
-  .sidebar-scrollbar [data-slot="scroll-area-scrollbar"] {
-    width: 8px;
-    padding: 1px;
-  }
-
-  .sidebar-scrollbar [data-slot="scroll-area-thumb"] {
-    background: color-mix(in srgb, var(--echo-brand-400) 55%, transparent);
-    transition: background-color 160ms ease;
-  }
-
-  .sidebar-scrollbar [data-slot="scroll-area-thumb"]:hover {
-    background: color-mix(in srgb, var(--echo-brand-400) 80%, transparent);
-  }
-
+  /* Visible violet focus treatment. Used by the hand-rolled controls; shadcn
+     primitives use ring-ring through the same token. */
   .focus-ring {
     outline: none;
   }
   .focus-ring:focus-visible {
-    outline: 2px solid var(--echo-brand-400);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Mobile safe areas, for the sticky composer in Part 10. */
+  .pb-safe {
+    padding-bottom: var(--safe-bottom);
+  }
+  .pt-safe {
+    padding-top: var(--safe-top);
+  }
+}
+
+/* One scrollbar treatment for every scrollable region. Applied to native
+   scrollers via .app-scroll and to the shadcn ScrollArea slots below. */
+@layer utilities {
+  .app-scroll {
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+    scrollbar-width: thin;
+  }
+
+  .app-scroll::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+  }
+
+  .app-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--scrollbar-thumb);
+    background-clip: padding-box;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: padding-box;
+  }
+
+  .sidebar-scrollbar [data-slot="scroll-area-scrollbar"] {
+    width: var(--scrollbar-size);
+    padding: 1px;
+  }
+
+  .sidebar-scrollbar [data-slot="scroll-area-thumb"] {
+    background: var(--scrollbar-thumb);
+    transition: background-color 160ms ease;
+  }
+
+  .sidebar-scrollbar [data-slot="scroll-area-thumb"]:hover {
+    background: var(--scrollbar-thumb-hover);
   }
 }
