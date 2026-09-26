@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
-import { ConversationList } from "@/components/layout/ConversationList";
+import { ConversationList } from "@/components/conversations/ConversationList";
 import { useChatStore } from "@/components/providers/ChatProvider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -237,6 +237,7 @@ export function SidebarContent({ className }: { className?: string }) {
 
       <div className="px-2 pb-1">
         <button
+          id="new-chat-button"
           type="button"
           onClick={startNewChat}
           className="focus-ring flex w-full items-center gap-2 rounded-md bg-brand px-3 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_-4px_var(--echo-brand-glow)] transition-colors hover:bg-brand-hover"

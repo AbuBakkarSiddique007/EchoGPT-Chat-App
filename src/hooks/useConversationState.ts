@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useMemo, useReducer, useState } from "react";
 
 import { DEMO_CONVERSATIONS } from "@/data/demo-conversations";
 import { groupConversations } from "@/lib/conversation-groups";
@@ -15,7 +15,9 @@ type State = {
 type Action =
   | { type: "create"; conversation: Conversation }
   | { type: "select"; id: string | null }
-  | { type: "setDraft"; id: string; text: string };
+  | { type: "setDraft"; id: string; text: string }
+  | { type: "rename"; id: string; title: string }
+  | { type: "delete"; id: string; fallbackId: string | null };
 
 let newChatCounter = 0;
 
@@ -29,6 +31,13 @@ function createConversation(): Conversation {
     updatedAt: now,
     messages: [],
   };
+}
+
+function withoutKey<T>(source: Record<string, T>, key: string): Record<string, T> {
+  if (!(key in source)) return source;
+  const next = { ...source };
+  delete next[key];
+  return next;
 }
 
 function reducer(state: State, action: Action): State {
@@ -45,6 +54,25 @@ function reducer(state: State, action: Action): State {
     case "setDraft": {
       if (state.drafts[action.id] === action.text) return state;
       return { ...state, drafts: { ...state.drafts, [action.id]: action.text } };
+    }
+    case "rename":
+      return {
+        ...state,
+        conversations: state.conversations.map((conversation) =>
+          conversation.id === action.id
+            ? { ...conversation, title: action.title }
+            : conversation,
+        ),
+      };
+    case "delete": {
+      const removingSelected = state.selectedId === action.id;
+      return {
+        conversations: state.conversations.filter(
+          (conversation) => conversation.id !== action.id,
+        ),
+        selectedId: removingSelected ? action.fallbackId : state.selectedId,
+        drafts: withoutKey(state.drafts, action.id),
+      };
     }
   }
 }
@@ -68,6 +96,25 @@ export function useConversationState() {
     [state.conversations, state.selectedId],
   );
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const visibleGroups: ConversationGroup[] = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return groups;
+
+    return groups.flatMap((group) => {
+      const matches = group.conversations.filter((conversation) =>
+        conversation.title.toLowerCase().includes(query),
+      );
+      return matches.length > 0 ? [{ key: group.key, conversations: matches }] : [];
+    });
+  }, [groups, searchQuery]);
+
+  const visibleIds = useMemo(
+    () => visibleGroups.flatMap((group) => group.conversations.map((c) => c.id)),
+    [visibleGroups],
+  );
+
   const selectConversation = useCallback((id: string | null) => {
     dispatch({ type: "select", id });
   }, []);
@@ -80,17 +127,38 @@ export function useConversationState() {
     dispatch({ type: "setDraft", id, text });
   }, []);
 
+  const renameConversation = useCallback((id: string, title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) return;
+    dispatch({ type: "rename", id, title: trimmed });
+  }, []);
+
+  const deleteConversation = useCallback(
+    (id: string) => {
+      const index = visibleIds.indexOf(id);
+      const fallbackId = visibleIds[index + 1] ?? visibleIds[index - 1] ?? null;
+      dispatch({ type: "delete", id, fallbackId });
+    },
+    [visibleIds],
+  );
+
   const draft = state.selectedId ? (state.drafts[state.selectedId] ?? "") : "";
 
   return {
     conversations: state.conversations,
     groups,
+    visibleGroups,
+    visibleIds,
+    searchQuery,
     selectedId: state.selectedId,
     selected,
     draft,
+    setSearchQuery,
     selectConversation,
     startNewChat,
     setDraft,
+    renameConversation,
+    deleteConversation,
   };
 }
 
