@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 type NavItem = {
   label: string;
@@ -127,11 +129,11 @@ function ProCard() {
 }
 
 
-export function DesktopSidebar() {
+export function SidebarContent({ className }: { className?: string }) {
   return (
     <nav
       aria-label="EchoGPT sections"
-      className="hidden min-h-0 w-[280px] shrink-0 flex-col border-r border-line bg-sidebar lg:flex xl:w-[320px]"
+      className={cn("flex min-h-0 min-w-0 flex-col bg-sidebar", className)}
     >
       <div className="flex items-center gap-2.5 px-4 py-4">
         <BrandLogo className="size-8" />
@@ -153,12 +155,16 @@ export function DesktopSidebar() {
         </button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto pb-2">
+      <ScrollArea className="sidebar-scrollbar min-h-0 flex-1 pb-2">
         <NavGroup title="Engagement" items={ENGAGEMENT} />
         <NavGroup title={"Help & Support"} items={SUPPORT} />
-      </div>
+      </ScrollArea>
 
       <ProCard />
     </nav>
   );
+}
+
+export function DesktopSidebar() {
+  return <SidebarContent className="hidden w-[280px] shrink-0 border-r border-line lg:flex xl:w-[320px]" />;
 }
