@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Menu, Plus } from "lucide-react";
 
 import { SidebarContent } from "@/components/layout/DesktopSidebar";
@@ -15,10 +16,15 @@ import {
 
 export function MobileSidebar() {
     const { startNewChat } = useChatStore();
+    const [open, setOpen] = useState(false);
+
+    function closeDrawer() {
+        setOpen(false);
+    }
 
     return (
         <div className="flex shrink-0 items-center gap-1 border-b border-line bg-sidebar/80 px-2 pt-safe pb-2 lg:hidden">
-            <Sheet>
+            <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger
                     render={
                         <Button
@@ -40,7 +46,7 @@ export function MobileSidebar() {
                     <SheetDescription className="sr-only">
                         Navigate EchoGPT sections and conversation tools.
                     </SheetDescription>
-                    <SidebarContent className="flex-1" />
+                    <SidebarContent className="flex-1" onNavigate={closeDrawer} />
                 </SheetContent>
             </Sheet>
 

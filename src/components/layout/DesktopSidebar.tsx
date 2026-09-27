@@ -217,7 +217,13 @@ function SidebarFooter() {
   );
 }
 
-export function SidebarContent({ className }: { className?: string }) {
+export function SidebarContent({
+  className,
+  onNavigate,
+}: {
+  className?: string;
+  onNavigate?: () => void;
+}) {
   const { startNewChat } = useChatStore();
 
   return (
@@ -239,7 +245,10 @@ export function SidebarContent({ className }: { className?: string }) {
         <button
           id="new-chat-button"
           type="button"
-          onClick={startNewChat}
+          onClick={() => {
+            startNewChat();
+            onNavigate?.();
+          }}
           className="focus-ring flex w-full items-center gap-2 rounded-md bg-brand px-3 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_-4px_var(--echo-brand-glow)] transition-colors hover:bg-brand-hover"
         >
           <Plus className="size-4 shrink-0" aria-hidden="true" />
@@ -249,7 +258,7 @@ export function SidebarContent({ className }: { className?: string }) {
 
       <ScrollArea className="sidebar-scrollbar min-h-0 flex-1 pb-2">
         <NavGroup title="Engagement" items={ENGAGEMENT} />
-        <ConversationList />
+        <ConversationList onNavigate={onNavigate} />
         <NavGroup title={"Help & Support"} items={SUPPORT} />
       </ScrollArea>
 
