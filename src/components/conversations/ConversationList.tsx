@@ -67,7 +67,7 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
   if (visibleGroups.length === 0 && !isSearching) return null;
 
   return (
-    <div className="px-2">
+    <div className="sidebar-collapse-hide px-2">
       <h2 className="px-2.5 pb-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-fg-dim">
         Conversations
       </h2>

@@ -8,11 +8,12 @@ import { PromptStarters } from "@/components/chat/PromptStarters";
 import { useChatStore } from "@/components/providers/ChatProvider";
 
 export function ConversationStage() {
-  const { selected, sendMessage } = useChatStore();
+  const { selected, sendMessage, ensureConversation } = useChatStore();
   const hasMessages = (selected?.messages.length ?? 0) > 0;
 
   const handleSend = (text: string) => {
-    void sendMessage(selected?.id ?? null, text, selected?.messages ?? []);
+    const conversationId = selected?.id ?? ensureConversation();
+    void sendMessage(conversationId, text, selected?.messages ?? []);
   };
 
   return (

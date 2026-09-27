@@ -8,7 +8,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
-import { ArrowUp, ChevronDown, Paperclip, SlidersHorizontal, Square } from "lucide-react";
+import { ArrowUp, ChevronDown, CircleAlert, Paperclip, SlidersHorizontal, Square, X } from "lucide-react";
 
 import { useChatStore } from "@/components/providers/ChatProvider";
 import { COMPOSER_FOCUS_EVENT } from "@/lib/composer-events";
@@ -19,16 +19,20 @@ const MAX_HEIGHT_PX = 240;
 const MODELS = ["GPT-5.6 Sol", "GPT-5.6 Terra", "GPT-5.6 Mini"];
 
 export function Composer({ onSend }: { onSend?: (text: string) => void }) {
-  const { selectedId, draft, setDraft, statusFor } = useChatStore();
+  const { selectedId, draft, setDraft, statusFor, setStatus } = useChatStore();
   const status = statusFor(selectedId);
   const isStreaming = status === "sending" || status === "streaming";
+  const isError = status === "error";
+
+  const dismissError = useCallback(() => {
+    if (selectedId) setStatus(selectedId, "idle");
+  }, [selectedId, setStatus]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
 
   const trimmed = draft.trim();
   const canSend = trimmed.length > 0 && onSend !== undefined;
-  const isDisabled = selectedId === null;
 
   useLayoutEffect(() => {
     const el = textareaRef.current;
@@ -42,13 +46,12 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
   const mounted = useRef(false);
 
   useEffect(() => {
-    if (isDisabled) return;
     if (!mounted.current) {
       mounted.current = true;
       return;
     }
     textareaRef.current?.focus();
-  }, [selectedId, isDisabled]);
+  }, [selectedId]);
 
   useEffect(() => {
     const handler = () => textareaRef.current?.focus();
@@ -85,6 +88,30 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
       }}
       className="w-full rounded-2xl border border-brand/45 bg-composer/80 shadow-[0_0_28px_-10px_var(--echo-brand-glow)] backdrop-blur-sm transition-colors focus-within:border-brand focus-within:shadow-[0_0_0_3px_var(--echo-brand-glow)]"
     >
+      {isError ? (
+        <div
+          role="status"
+          className="mx-2.5 mt-2 flex items-start gap-2 rounded-lg border border-destructive/45 bg-destructive/10 px-3 py-2 text-[12.5px] text-fg-2"
+        >
+          <CircleAlert
+            className="mt-px size-4 shrink-0 text-destructive"
+            aria-hidden="true"
+          />
+          <p className="min-w-0 flex-1">
+            <span className="font-medium text-fg">EchoGPT could not reply.</span> Your
+            message was saved to this conversation.
+          </p>
+          <button
+            type="button"
+            onClick={dismissError}
+            className="focus-ring -mr-1 shrink-0 rounded p-1 text-fg-dim transition-colors hover:bg-destructive/15 hover:text-fg"
+          >
+            <X className="size-3.5" aria-hidden="true" />
+            <span className="sr-only">Dismiss error</span>
+          </button>
+        </div>
+      ) : null}
+
       <label htmlFor="composer-input" className="sr-only">
         Message EchoGPT
       </label>
@@ -96,13 +123,12 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
         ref={textareaRef}
         rows={1}
         value={draft}
-        onChange={(event) => selectedId && setDraft(selectedId, event.target.value)}
+        onChange={(event) => setDraft(selectedId, event.target.value)}
         onKeyDown={handleKeyDown}
         enterKeyHint="send"
-        disabled={isDisabled}
         aria-describedby="composer-hint"
-        placeholder={isDisabled ? "Start a new chat to begin" : "Message EchoGPT…"}
-        className="block max-h-[240px] w-full resize-none bg-transparent px-3.5 pt-3 pb-1 text-[15px] leading-6 text-fg outline-none placeholder:text-fg-dim disabled:cursor-not-allowed"
+        placeholder="Message EchoGPT…"
+        className="block max-h-[240px] w-full resize-none bg-transparent px-3.5 pt-3 pb-1 text-[15px] leading-6 text-fg outline-none placeholder:text-fg-dim"
       />
 
       <div className="flex items-center gap-1 px-2.5 pt-1 pb-2">

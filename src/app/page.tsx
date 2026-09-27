@@ -5,6 +5,8 @@ import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { ConversationStage } from "@/components/chat/ConversationStage";
 import { ChatProvider } from "@/components/providers/ChatProvider";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <ChatProvider>
