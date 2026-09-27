@@ -28,7 +28,6 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
 
   const trimmed = draft.trim();
   const canSend = trimmed.length > 0 && onSend !== undefined;
-  const isDisabled = selectedId === null;
 
   useLayoutEffect(() => {
     const el = textareaRef.current;
@@ -42,13 +41,12 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
   const mounted = useRef(false);
 
   useEffect(() => {
-    if (isDisabled) return;
     if (!mounted.current) {
       mounted.current = true;
       return;
     }
     textareaRef.current?.focus();
-  }, [selectedId, isDisabled]);
+  }, [selectedId]);
 
   useEffect(() => {
     const handler = () => textareaRef.current?.focus();
@@ -96,13 +94,12 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
         ref={textareaRef}
         rows={1}
         value={draft}
-        onChange={(event) => selectedId && setDraft(selectedId, event.target.value)}
+        onChange={(event) => setDraft(selectedId, event.target.value)}
         onKeyDown={handleKeyDown}
         enterKeyHint="send"
-        disabled={isDisabled}
         aria-describedby="composer-hint"
-        placeholder={isDisabled ? "Start a new chat to begin" : "Message EchoGPT…"}
-        className="block max-h-[240px] w-full resize-none bg-transparent px-3.5 pt-3 pb-1 text-[15px] leading-6 text-fg outline-none placeholder:text-fg-dim disabled:cursor-not-allowed"
+        placeholder="Message EchoGPT…"
+        className="block max-h-[240px] w-full resize-none bg-transparent px-3.5 pt-3 pb-1 text-[15px] leading-6 text-fg outline-none placeholder:text-fg-dim"
       />
 
       <div className="flex items-center gap-1 px-2.5 pt-1 pb-2">

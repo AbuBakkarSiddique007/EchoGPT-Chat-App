@@ -111,11 +111,9 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const INITIAL_SELECTED_ID = "conv-pricing-brief";
-
 const INITIAL_STATE: State = {
   conversations: DEMO_CONVERSATIONS,
-  selectedId: INITIAL_SELECTED_ID,
+  selectedId: null,
   drafts: {},
 };
 
@@ -159,8 +157,19 @@ export function useConversationState() {
     dispatch({ type: "create", conversation: createConversation() });
   }, []);
 
-  const setDraft = useCallback((id: string, text: string) => {
-    dispatch({ type: "setDraft", id, text });
+  const ensureConversation = useCallback((): string => {
+    if (state.selectedId) return state.selectedId;
+    const conversation = createConversation();
+    dispatch({ type: "create", conversation });
+    return conversation.id;
+  }, [state.selectedId]);
+
+  const setDraft = useCallback((id: string | null, text: string) => {
+    if (id) {
+      dispatch({ type: "setDraft", id, text });
+      return;
+    }
+    dispatch({ type: "create", conversation: createConversation(), draft: text });
   }, []);
 
   const clearDraft = useCallback((id: string) => {
@@ -173,13 +182,9 @@ export function useConversationState() {
 
   const fillDraft = useCallback(
     (text: string) => {
-      if (state.selectedId) {
-        dispatch({ type: "setDraft", id: state.selectedId, text });
-        return;
-      }
-      dispatch({ type: "create", conversation: createConversation(), draft: text });
+      setDraft(state.selectedId, text);
     },
-    [state.selectedId],
+    [setDraft, state.selectedId],
   );
 
   const renameConversation = useCallback((id: string, title: string) => {
@@ -211,6 +216,7 @@ export function useConversationState() {
     setSearchQuery,
     selectConversation,
     startNewChat,
+    ensureConversation,
     setDraft,
     clearDraft,
     appendMessage,

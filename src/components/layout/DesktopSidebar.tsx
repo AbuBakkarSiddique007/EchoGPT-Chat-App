@@ -4,11 +4,11 @@ import {
   ArrowUpRight,
   Briefcase,
   Check,
+  ChevronDown,
   Clapperboard,
   CreditCard,
   FileText,
   GitCompare,
-  History,
   ImageIcon,
   LifeBuoy,
   ListTodo,
@@ -55,7 +55,6 @@ type NavItem = {
   compact?: string;
   icon: LucideIcon;
   badge?: "Pro";
-  active?: boolean;
 };
 
 const ENGAGEMENT: NavItem[] = [
@@ -63,12 +62,13 @@ const ENGAGEMENT: NavItem[] = [
   { label: "Video Studio", compact: "Videos", icon: Clapperboard, badge: "Pro" },
   { label: "Compare", icon: GitCompare },
   { label: "Connectors", icon: Plug },
-  { label: "History", icon: History, active: true },
   { label: "Store", icon: Store },
   { label: "AI Tasks", compact: "Tasks", icon: ListTodo },
   { label: "AI Job Analysis", compact: "Job Analysis", icon: Briefcase },
   { label: "AI SOP Builder", compact: "SOP Builder", icon: FileText },
 ];
+
+const ENGAGEMENT_PRIMARY_COUNT = 3;
 
 const SUPPORT: NavItem[] = [
   { label: "Support", icon: LifeBuoy },
@@ -90,26 +90,21 @@ function NavLabel({ label, compact }: { label: string; compact?: string }) {
 }
 
 function NavRow({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
-  const { label, compact, icon: Icon, badge, active } = item;
+  const { label, compact, icon: Icon, badge } = item;
   const status = badge === "Pro" ? "Pro — coming soon" : "coming soon";
 
   return (
     <button
       type="button"
-      {...(active
-        ? { "aria-current": "page" as const }
-        : { "aria-disabled": "true" as const })}
+      aria-disabled="true"
       title={`${label} — ${status}`}
       className={cn(
-        "sidebar-icon-row focus-ring group flex w-full items-center gap-2.5 rounded-md py-2 text-left text-sm transition-colors",
+        "sidebar-icon-row focus-ring group flex w-full cursor-not-allowed items-center gap-2.5 rounded-md py-2 text-left text-sm text-fg-3 transition-colors hover:bg-brand/5",
         collapsed ? "justify-center" : "px-2.5",
-        active
-          ? "bg-brand/15 font-medium text-fg ring-1 ring-inset ring-brand/35 hover:bg-brand/20"
-          : "cursor-not-allowed text-fg-3 hover:bg-brand/5",
       )}
     >
       <span className="relative flex size-4 shrink-0 items-center justify-center">
-        <Icon className={cn("size-4", active && "text-brand-text")} aria-hidden="true" />
+        <Icon className="size-4" aria-hidden="true" />
         {badge === "Pro" ? (
           <span
             className="sidebar-rail-only absolute -top-1 -right-1 size-1.5 rounded-full bg-brand-text ring-2 ring-sidebar"
@@ -127,7 +122,6 @@ function NavRow({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
           Soon
         </span>
       )}
-      {active ? <span className="sr-only">(current workspace)</span> : null}
     </button>
   );
 }
@@ -136,11 +130,18 @@ function NavGroup({
   title,
   items,
   collapsed,
+  primaryCount,
 }: {
   title: string;
   items: NavItem[];
   collapsed: boolean;
+  primaryCount?: number;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const hiddenCount = items.length - (primaryCount ?? items.length);
+  const overflowed = hiddenCount > 0;
+  const visible = overflowed && !expanded ? items.slice(0, primaryCount) : items;
+
   return (
     <div className="px-2">
       <h2 className="sidebar-label px-2.5 pb-1.5 pt-3 text-[11px] font-medium uppercase tracking-[0.08em] text-fg-dim">
@@ -151,12 +152,37 @@ function NavGroup({
         aria-hidden="true"
       />
       <ul className="flex flex-col gap-0.5">
-        {items.map((item) => (
+        {visible.map((item) => (
           <li key={item.label}>
             <NavRow item={item} collapsed={collapsed} />
           </li>
         ))}
       </ul>
+      {overflowed ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          aria-expanded={expanded}
+          className="focus-ring sidebar-icon-row mt-0.5 flex w-full cursor-pointer items-center gap-2.5 rounded-md py-1.5 text-left text-[12px] font-medium text-fg-3 transition-colors hover:bg-brand/5 hover:text-fg"
+          title={expanded ? `Show fewer ${title} options` : `Show all ${title} options`}
+        >
+          <ChevronDown
+            className={cn(
+              "size-3.5 shrink-0 transition-transform duration-200",
+              expanded && "rotate-180",
+            )}
+            aria-hidden="true"
+          />
+          <span className="sidebar-label min-w-0 flex-1 truncate">
+            {expanded ? "Show less" : `More (${hiddenCount})`}
+          </span>
+          <span className="sr-only">
+            {expanded
+              ? `Collapse the remaining ${title} options`
+              : `Show ${hiddenCount} more ${title} options`}
+          </span>
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -420,7 +446,12 @@ export function SidebarContent({
 
       <ScrollArea className="sidebar-scrollbar min-h-0 flex-1 pb-2">
         <div id="echo-sidebar-nav">
-          <NavGroup title="Engagement" items={ENGAGEMENT} collapsed={collapsed} />
+          <NavGroup
+            title="Engagement"
+            items={ENGAGEMENT}
+            collapsed={collapsed}
+            primaryCount={ENGAGEMENT_PRIMARY_COUNT}
+          />
           <ConversationList onNavigate={onNavigate} />
           <NavGroup title="Help & Support" items={SUPPORT} collapsed={collapsed} />
         </div>
