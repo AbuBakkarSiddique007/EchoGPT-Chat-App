@@ -77,8 +77,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const INITIAL_SELECTED_ID =
-  DEMO_CONVERSATIONS.find((conversation) => conversation.messages.length === 0)?.id ?? null;
+const INITIAL_SELECTED_ID = "conv-pricing-brief";
 
 const INITIAL_STATE: State = {
   conversations: DEMO_CONVERSATIONS,
