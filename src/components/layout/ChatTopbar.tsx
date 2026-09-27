@@ -1,6 +1,12 @@
+"use client";
+
 import { ChevronDown, Download, Settings } from "lucide-react";
 
+import { useChatStore } from "@/components/providers/ChatProvider";
+
 export function ChatTopbar() {
+  const { selected } = useChatStore();
+
   return (
     <header className="flex shrink-0 items-center gap-2 border-b border-line px-3 py-2.5 sm:px-4">
       <button
@@ -17,6 +23,10 @@ export function ChatTopbar() {
       <span className="hidden shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] tracking-wide text-fg-dim md:inline">
         Static preview
       </span>
+
+      <h1 className="min-w-0 flex-1 truncate px-1 text-center text-[13px] font-medium text-fg-2">
+        {selected?.title ?? "New chat"}
+      </h1>
 
       <div className="ml-auto flex shrink-0 items-center gap-1">
         <button

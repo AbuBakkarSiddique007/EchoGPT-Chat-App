@@ -12,9 +12,9 @@ export function EmptyChatState() {
         <BrandLogo className="size-11" />
       </div>
 
-      <h1 className="mt-4 text-2xl font-semibold tracking-tight text-fg sm:text-[28px]">
+      <p className="mt-4 text-2xl font-semibold tracking-tight text-fg sm:text-[28px]">
         What are we building today?
-      </h1>
+      </p>
       <p className="mt-2 max-w-md text-sm leading-relaxed text-fg-2">
         Ask anything, or start from a suggestion below. EchoGPT routes your prompt to the
         right model automatically.
