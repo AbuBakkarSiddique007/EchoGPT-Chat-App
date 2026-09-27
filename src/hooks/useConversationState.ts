@@ -4,7 +4,15 @@ import { useCallback, useMemo, useReducer, useState } from "react";
 
 import { DEMO_CONVERSATIONS } from "@/data/demo-conversations";
 import { groupConversations } from "@/lib/conversation-groups";
-import type { Conversation, ConversationGroup, DraftMap } from "@/types/chat";
+import type { Conversation, ConversationGroup, DraftMap, Message } from "@/types/chat";
+
+const UNTITLED = "New chat";
+
+function titleFromPrompt(text: string): string {
+  const flat = text.replace(/\s+/g, " ").trim();
+  if (flat.length <= 48) return flat;
+  return `${flat.slice(0, 48).trimEnd()}…`;
+}
 
 type State = {
   conversations: Conversation[];
@@ -16,6 +24,8 @@ type Action =
   | { type: "create"; conversation: Conversation; draft?: string }
   | { type: "select"; id: string | null }
   | { type: "setDraft"; id: string; text: string }
+  | { type: "clearDraft"; id: string }
+  | { type: "append"; id: string; message: Message }
   | { type: "rename"; id: string; title: string }
   | { type: "delete"; id: string; fallbackId: string | null };
 
@@ -27,7 +37,7 @@ function createConversation(): Conversation {
 
   return {
     id: `conv-new-${now}-${newChatCounter}`,
-    title: "New chat",
+    title: UNTITLED,
     updatedAt: now,
     messages: [],
   };
@@ -54,6 +64,30 @@ function reducer(state: State, action: Action): State {
     case "setDraft": {
       if (state.drafts[action.id] === action.text) return state;
       return { ...state, drafts: { ...state.drafts, [action.id]: action.text } };
+    }
+    case "clearDraft": {
+      if (!state.drafts[action.id]) return state;
+      return { ...state, drafts: { ...state.drafts, [action.id]: "" } };
+    }
+    case "append": {
+      let changed = false;
+
+      const conversations = state.conversations.map((conversation) => {
+        if (conversation.id !== action.id) return conversation;
+        changed = true;
+        return {
+          ...conversation,
+          title:
+            conversation.title === UNTITLED && action.message.role === "user"
+              ? titleFromPrompt(action.message.content)
+              : conversation.title,
+          updatedAt: action.message.createdAt,
+          messages: [...conversation.messages, action.message],
+        };
+      });
+
+      if (!changed) return state;
+      return { ...state, conversations };
     }
     case "rename":
       return {
@@ -129,6 +163,14 @@ export function useConversationState() {
     dispatch({ type: "setDraft", id, text });
   }, []);
 
+  const clearDraft = useCallback((id: string) => {
+    dispatch({ type: "clearDraft", id });
+  }, []);
+
+  const appendMessage = useCallback((id: string, message: Message) => {
+    dispatch({ type: "append", id, message });
+  }, []);
+
   const fillDraft = useCallback(
     (text: string) => {
       if (state.selectedId) {
@@ -170,6 +212,8 @@ export function useConversationState() {
     selectConversation,
     startNewChat,
     setDraft,
+    clearDraft,
+    appendMessage,
     fillDraft,
     renameConversation,
     deleteConversation,

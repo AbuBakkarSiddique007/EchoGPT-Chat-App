@@ -1,15 +1,19 @@
 "use client";
 
 import { CapabilityCards } from "@/components/chat/CapabilityCards";
-import { ComposerPlaceholder } from "@/components/chat/ComposerPlaceholder";
+import { Composer } from "@/components/chat/Composer";
 import { EmptyChatState } from "@/components/chat/EmptyChatState";
 import { MessageList } from "@/components/chat/MessageList";
 import { PromptStarters } from "@/components/chat/PromptStarters";
 import { useChatStore } from "@/components/providers/ChatProvider";
 
 export function ConversationStage() {
-  const { selected } = useChatStore();
+  const { selected, sendMessage } = useChatStore();
   const hasMessages = (selected?.messages.length ?? 0) > 0;
+
+  const handleSend = (text: string) => {
+    void sendMessage(selected?.id ?? null, text, selected?.messages ?? []);
+  };
 
   return (
     <>
@@ -28,7 +32,7 @@ export function ConversationStage() {
 
       <div className="shrink-0 border-t border-line bg-surface/30 px-4 pt-3 pb-[max(0.75rem,var(--safe-bottom))] sm:px-6">
         <div className="mx-auto w-full max-w-[800px]">
-          <ComposerPlaceholder />
+          <Composer onSend={handleSend} />
         </div>
       </div>
     </>
