@@ -3,6 +3,7 @@
 import { Code, Compass, Lightbulb, PenLine, type LucideIcon } from "lucide-react";
 
 import { useChatStore } from "@/components/providers/ChatProvider";
+import { COMPOSER_FOCUS_EVENT } from "@/lib/composer-events";
 
 type Starter = {
   label: string;
@@ -45,7 +46,10 @@ export function PromptStarters() {
         <li key={label} className="shrink-0 snap-start">
           <button
             type="button"
-            onClick={() => fillDraft(prompt)}
+            onClick={() => {
+              fillDraft(prompt);
+              window.dispatchEvent(new Event(COMPOSER_FOCUS_EVENT));
+            }}
             title={prompt}
             className="focus-ring flex items-center gap-1.5 rounded-full border border-line bg-surface-2/60 px-3 py-1.5 text-[13px] text-fg-2 transition-colors hover:border-brand/40 hover:bg-brand/10 hover:text-fg"
           >

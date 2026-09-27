@@ -1,7 +1,7 @@
 "use client";
 
 import { CapabilityCards } from "@/components/chat/CapabilityCards";
-import { ComposerPlaceholder } from "@/components/chat/ComposerPlaceholder";
+import { Composer } from "@/components/chat/Composer";
 import { EmptyChatState } from "@/components/chat/EmptyChatState";
 import { MessageList } from "@/components/chat/MessageList";
 import { PromptStarters } from "@/components/chat/PromptStarters";
@@ -28,7 +28,7 @@ export function ConversationStage() {
 
       <div className="shrink-0 border-t border-line bg-surface/30 px-4 pt-3 pb-[max(0.75rem,var(--safe-bottom))] sm:px-6">
         <div className="mx-auto w-full max-w-[800px]">
-          <ComposerPlaceholder />
+          <Composer />
         </div>
       </div>
     </>
