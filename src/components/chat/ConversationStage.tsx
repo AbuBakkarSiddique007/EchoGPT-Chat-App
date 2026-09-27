@@ -25,7 +25,7 @@ export function ConversationStage() {
         )}
       </div>
 
-      <div className="shrink-0 border-t border-line bg-surface/30 px-4 py-3 sm:px-6">
+      <div className="shrink-0 border-t border-line bg-surface/30 px-4 pt-3 pb-[max(0.75rem,var(--safe-bottom))] sm:px-6">
         <div className="mx-auto w-full max-w-[800px]">
           <ComposerPlaceholder />
         </div>
