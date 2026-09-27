@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useReducer, useState } from "react";
 
-import { DEMO_CONVERSATIONS } from "@/data/demo-conversations";
+import { createDemoConversations } from "@/data/demo-conversations";
 import { groupConversations } from "@/lib/conversation-groups";
 import type { Conversation, ConversationGroup, DraftMap, Message } from "@/types/chat";
 
@@ -111,14 +111,16 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const INITIAL_STATE: State = {
-  conversations: DEMO_CONVERSATIONS,
-  selectedId: null,
-  drafts: {},
-};
+function createInitialState(): State {
+  return {
+    conversations: createDemoConversations(),
+    selectedId: null,
+    drafts: {},
+  };
+}
 
 export function useConversationState() {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(reducer, null, createInitialState);
 
   const groups: ConversationGroup[] = useMemo(
     () => groupConversations(state.conversations),
@@ -195,11 +197,17 @@ export function useConversationState() {
 
   const deleteConversation = useCallback(
     (id: string) => {
-      const index = visibleIds.indexOf(id);
-      const fallbackId = visibleIds[index + 1] ?? visibleIds[index - 1] ?? null;
+      const index = state.conversations.findIndex((conversation) => conversation.id === id);
+      if (index === -1) return;
+
+      const remaining = state.conversations
+        .filter((conversation) => conversation.id !== id)
+        .map((conversation) => conversation.id);
+
+      const fallbackId = remaining[index] ?? remaining[index - 1] ?? null;
       dispatch({ type: "delete", id, fallbackId });
     },
-    [visibleIds],
+    [state.conversations],
   );
 
   const draft = state.selectedId ? (state.drafts[state.selectedId] ?? "") : "";

@@ -29,11 +29,19 @@ export function ConversationRow({
   const [draftTitle, setDraftTitle] = useState(title);
   const inputRef = useRef<HTMLInputElement>(null);
   const selectRef = useRef<HTMLButtonElement>(null);
+  const restoreFocus = useRef(false);
 
   useEffect(() => {
-    if (!renaming) return;
-    inputRef.current?.focus();
-    inputRef.current?.select();
+    if (renaming) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+      return;
+    }
+
+    if (restoreFocus.current) {
+      restoreFocus.current = false;
+      selectRef.current?.focus();
+    }
   }, [renaming]);
 
   function beginRename() {
@@ -42,16 +50,16 @@ export function ConversationRow({
   }
 
   function cancelRename() {
-    setRenaming(false);
     setDraftTitle(title);
-    selectRef.current?.focus();
+    restoreFocus.current = true;
+    setRenaming(false);
   }
 
   function commitRename() {
     const next = draftTitle.trim();
-    setRenaming(false);
     if (next && next !== title) onRename(id, next);
-    selectRef.current?.focus();
+    restoreFocus.current = true;
+    setRenaming(false);
   }
 
   return (
