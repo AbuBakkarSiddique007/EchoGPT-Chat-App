@@ -13,7 +13,7 @@ type State = {
 };
 
 type Action =
-  | { type: "create"; conversation: Conversation }
+  | { type: "create"; conversation: Conversation; draft?: string }
   | { type: "select"; id: string | null }
   | { type: "setDraft"; id: string; text: string }
   | { type: "rename"; id: string; title: string }
@@ -46,7 +46,7 @@ function reducer(state: State, action: Action): State {
       return {
         conversations: [action.conversation, ...state.conversations],
         selectedId: action.conversation.id,
-        drafts: { ...state.drafts, [action.conversation.id]: "" },
+        drafts: { ...state.drafts, [action.conversation.id]: action.draft ?? "" },
       };
     }
     case "select":
@@ -77,9 +77,12 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+const INITIAL_SELECTED_ID =
+  DEMO_CONVERSATIONS.find((conversation) => conversation.messages.length === 0)?.id ?? null;
+
 const INITIAL_STATE: State = {
   conversations: DEMO_CONVERSATIONS,
-  selectedId: DEMO_CONVERSATIONS[0]?.id ?? null,
+  selectedId: INITIAL_SELECTED_ID,
   drafts: {},
 };
 
@@ -127,6 +130,17 @@ export function useConversationState() {
     dispatch({ type: "setDraft", id, text });
   }, []);
 
+  const fillDraft = useCallback(
+    (text: string) => {
+      if (state.selectedId) {
+        dispatch({ type: "setDraft", id: state.selectedId, text });
+        return;
+      }
+      dispatch({ type: "create", conversation: createConversation(), draft: text });
+    },
+    [state.selectedId],
+  );
+
   const renameConversation = useCallback((id: string, title: string) => {
     const trimmed = title.trim();
     if (!trimmed) return;
@@ -157,6 +171,7 @@ export function useConversationState() {
     selectConversation,
     startNewChat,
     setDraft,
+    fillDraft,
     renameConversation,
     deleteConversation,
   };

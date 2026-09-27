@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export function ConversationList() {
+export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
   const {
     conversations,
     visibleGroups,
@@ -95,7 +95,10 @@ export function ConversationList() {
                     key={conversation.id}
                     conversation={conversation}
                     selected={conversation.id === selectedId}
-                    onSelect={selectConversation}
+                    onSelect={(id) => {
+                      selectConversation(id);
+                      onNavigate?.();
+                    }}
                     onRename={renameConversation}
                     onRequestDelete={setPendingDeleteId}
                     registerRow={registerRow}
