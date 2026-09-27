@@ -14,7 +14,10 @@ const ChatContext = createContext<ChatStore | null>(null);
 
 export function ChatProvider({ children }: { children: ReactNode }) {
   const conversation = useConversationState();
-  const chat = useChatState();
+  const chat = useChatState({
+    appendMessage: conversation.appendMessage,
+    clearDraft: conversation.clearDraft,
+  });
 
   return (
     <ChatContext.Provider value={{ ...conversation, ...chat }}>
