@@ -14,6 +14,8 @@ import {
   ListTodo,
   Mail,
   MessageCircle,
+  PanelLeftClose,
+  PanelLeftOpen,
   Plus,
   Plug,
   Settings,
@@ -24,15 +26,29 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ConversationList } from "@/components/conversations/ConversationList";
 import { useChatStore } from "@/components/providers/ChatProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  getCollapsedSnapshot,
+  getServerCollapsedSnapshot,
+  setSidebarCollapsed,
+  subscribeCollapsed,
+} from "@/lib/sidebar-pref";
 import { THEME_OPTIONS } from "@/lib/theme";
 import { cn } from "@/lib/utils";
+
+function useSidebarCollapsed(): boolean {
+  return useSyncExternalStore(
+    subscribeCollapsed,
+    getCollapsedSnapshot,
+    getServerCollapsedSnapshot,
+  );
+}
 
 type NavItem = {
   label: string;
@@ -63,63 +79,81 @@ const SUPPORT: NavItem[] = [
 ];
 
 function NavLabel({ label, compact }: { label: string; compact?: string }) {
-  if (!compact) return <span className="min-w-0 flex-1 truncate">{label}</span>;
+  if (!compact) return <span className="sidebar-label min-w-0 flex-1 truncate">{label}</span>;
 
   return (
-    <span className="min-w-0 flex-1 truncate">
+    <span className="sidebar-label min-w-0 flex-1 truncate">
       <span className="sm:hidden">{compact}</span>
       <span className="hidden sm:inline">{label}</span>
     </span>
   );
 }
 
-function NavRow({ item }: { item: NavItem }) {
+function NavRow({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const { label, compact, icon: Icon, badge, active } = item;
-
-  if (!active) {
-    return (
-      <button
-        type="button"
-        aria-disabled="true"
-        title={`${label} — coming soon`}
-        className="focus-ring group flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm text-fg-3 transition-colors"
-      >
-        <Icon className="size-4 shrink-0" aria-hidden="true" />
-        <NavLabel label={label} compact={compact} />
-        {badge ? (
-          <span className="shrink-0 rounded-full border border-brand/40 bg-brand/10 px-1.5 py-px text-[10px] font-medium tracking-wide text-brand-text">
-            {badge}
-          </span>
-        ) : (
-          <span className="shrink-0 text-[10px] tracking-wide text-fg-dim">Soon</span>
-        )}
-      </button>
-    );
-  }
+  const status = badge === "Pro" ? "Pro — coming soon" : "coming soon";
 
   return (
     <button
       type="button"
-      aria-current="page"
-      className="focus-ring flex w-full items-center gap-2.5 rounded-md bg-brand/15 px-2.5 py-2 text-left text-sm font-medium text-fg ring-1 ring-inset ring-brand/35 transition-colors hover:bg-brand/20"
+      {...(active
+        ? { "aria-current": "page" as const }
+        : { "aria-disabled": "true" as const })}
+      title={`${label} — ${status}`}
+      className={cn(
+        "sidebar-icon-row focus-ring group flex w-full items-center gap-2.5 rounded-md py-2 text-left text-sm transition-colors",
+        collapsed ? "justify-center" : "px-2.5",
+        active
+          ? "bg-brand/15 font-medium text-fg ring-1 ring-inset ring-brand/35 hover:bg-brand/20"
+          : "cursor-not-allowed text-fg-3 hover:bg-brand/5",
+      )}
     >
-      <Icon className="size-4 shrink-0 text-brand-text" aria-hidden="true" />
+      <span className="relative flex size-4 shrink-0 items-center justify-center">
+        <Icon className={cn("size-4", active && "text-brand-text")} aria-hidden="true" />
+        {badge === "Pro" ? (
+          <span
+            className="sidebar-rail-only absolute -top-1 -right-1 size-1.5 rounded-full bg-brand-text ring-2 ring-sidebar"
+            aria-hidden="true"
+          />
+        ) : null}
+      </span>
       <NavLabel label={label} compact={compact} />
-      <span className="sr-only">(current workspace)</span>
+      {badge ? (
+        <span className="sidebar-collapse-hide shrink-0 rounded-full border border-brand/40 bg-brand/10 px-1.5 py-px text-[10px] font-medium tracking-wide text-brand-text">
+          {badge}
+        </span>
+      ) : (
+        <span className="sidebar-collapse-hide shrink-0 text-[10px] tracking-wide text-fg-dim">
+          Soon
+        </span>
+      )}
+      {active ? <span className="sr-only">(current workspace)</span> : null}
     </button>
   );
 }
 
-function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
+function NavGroup({
+  title,
+  items,
+  collapsed,
+}: {
+  title: string;
+  items: NavItem[];
+  collapsed: boolean;
+}) {
   return (
     <div className="px-2">
-      <h2 className="px-2.5 pb-1.5 pt-3 text-[11px] font-medium uppercase tracking-[0.08em] text-fg-dim">
+      <h2 className="sidebar-label px-2.5 pb-1.5 pt-3 text-[11px] font-medium uppercase tracking-[0.08em] text-fg-dim">
         {title}
       </h2>
+      <div
+        className="sidebar-rail-only mx-auto my-2.5 h-px w-5 bg-line"
+        aria-hidden="true"
+      />
       <ul className="flex flex-col gap-0.5">
         {items.map((item) => (
           <li key={item.label}>
-            <NavRow item={item} />
+            <NavRow item={item} collapsed={collapsed} />
           </li>
         ))}
       </ul>
@@ -135,7 +169,7 @@ function UsageSummary() {
   const pct = Math.round((USAGE_USED / USAGE_LIMIT) * 100);
 
   return (
-    <div className="mx-2 mb-1.5 flex items-center gap-2 rounded-lg border border-line bg-surface/40 px-2.5 py-2">
+    <div className="sidebar-collapse-hide mx-2 mb-1.5 flex items-center gap-2 rounded-lg border border-line bg-surface/40 px-2.5 py-2">
       <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-fg-dim">
         Usage
       </span>
@@ -153,21 +187,29 @@ function UsageSummary() {
   );
 }
 
-function ProCard() {
+function ProCard({ collapsed }: { collapsed: boolean }) {
   return (
     <div
-      className="mx-2 mb-1.5 flex items-center gap-2 rounded-lg border border-brand/30 bg-[linear-gradient(145deg,rgba(118,80,236,0.22),rgba(73,121,251,0.10))] px-2.5 py-2"
+      className={cn(
+        "mx-2 mb-1.5 flex items-center gap-2 rounded-lg border border-brand/30 bg-[linear-gradient(145deg,rgba(118,80,236,0.22),rgba(73,121,251,0.10))] px-2.5 py-2",
+        collapsed && "justify-center px-0",
+      )}
       title={PRO_PITCH}
     >
       <Crown className="size-3.5 shrink-0 text-brand-text" aria-hidden="true" />
-      <span className="min-w-0 flex-1 truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-text">
+      <span
+        className={cn(
+          "min-w-0 flex-1 truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-text",
+          collapsed && "sidebar-label",
+        )}
+      >
         Unlock Pro
       </span>
       <button
         type="button"
         aria-disabled="true"
         title={`Upgrade — coming soon. ${PRO_PITCH}`}
-        className="focus-ring flex shrink-0 cursor-not-allowed items-center gap-0.5 rounded-md bg-brand/40 px-2 py-1 text-[11px] font-medium text-fg-2"
+        className="sidebar-collapse-hide focus-ring flex shrink-0 cursor-not-allowed items-center gap-0.5 rounded-md bg-brand/40 px-2 py-1 text-[11px] font-medium text-fg-2"
       >
         Upgrade
         <ArrowUpRight className="size-3" aria-hidden="true" />
@@ -178,7 +220,7 @@ function ProCard() {
   );
 }
 
-function SidebarFooter() {
+function SidebarFooter({ collapsed }: { collapsed: boolean }) {
   const { preference, resolved, setPreference } = useTheme();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -202,12 +244,20 @@ function SidebarFooter() {
   }, [open]);
 
   return (
-    <div className="flex items-center gap-1 border-t border-line px-2 py-1.5">
+    <div
+      className={cn(
+        "flex items-center gap-1 border-t border-line px-2 py-1.5",
+        collapsed && "flex-col gap-1 py-2",
+      )}
+    >
       <button
         type="button"
         aria-disabled="true"
         title="Sign in — coming soon"
-        className="focus-ring flex min-w-0 flex-1 cursor-not-allowed items-center gap-2 rounded-md px-1.5 py-1.5 text-left transition-colors hover:bg-brand/5"
+        className={cn(
+          "focus-ring flex min-w-0 cursor-not-allowed items-center gap-2 rounded-md px-1.5 py-1.5 text-left transition-colors hover:bg-brand/5",
+          collapsed ? "justify-center" : "flex-1",
+        )}
       >
         <span
           className="flex size-6 shrink-0 items-center justify-center rounded-full border border-line bg-surface-2"
@@ -215,7 +265,12 @@ function SidebarFooter() {
         >
           <UserRound className="size-3 text-fg-2" />
         </span>
-        <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-fg">
+        <span
+          className={cn(
+            "min-w-0 flex-1 truncate text-[12px] font-medium text-fg",
+            collapsed && "sidebar-label",
+          )}
+        >
           Guest
         </span>
         <span className="sr-only">sign in to sync history — coming soon</span>
@@ -238,7 +293,10 @@ function SidebarFooter() {
           <div
             role="menu"
             aria-label="Theme"
-            className="absolute right-0 bottom-full z-30 mb-1 w-40 rounded-lg border border-line bg-surface-elev/95 p-1 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.8)] backdrop-blur"
+            className={cn(
+              "absolute z-30 w-40 rounded-lg border border-line bg-surface-elev/95 p-1 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.8)] backdrop-blur",
+              collapsed ? "bottom-0 left-full ml-2" : "right-0 bottom-full mb-1",
+            )}
           >
             {THEME_OPTIONS.map((option) => (
               <button
@@ -282,9 +340,13 @@ function SidebarFooter() {
 export function SidebarContent({
   className,
   onNavigate,
+  collapsed = false,
+  onToggleCollapse,
 }: {
   className?: string;
   onNavigate?: () => void;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }) {
   const { startNewChat } = useChatStore();
 
@@ -293,17 +355,51 @@ export function SidebarContent({
       aria-label="EchoGPT sections"
       className={cn("flex min-h-0 min-w-0 flex-col bg-sidebar", className)}
     >
-      <div className="flex items-center gap-2.5 px-4 py-4">
-        <BrandLogo className="size-8" />
-        <div className="flex min-w-0 flex-col">
+      <div
+        className={cn(
+          "flex px-4 py-4",
+          collapsed ? "flex-col items-center gap-1.5 px-2 py-3" : "items-center gap-2.5",
+        )}
+      >
+        <BrandLogo className="size-8 shrink-0" />
+        <div
+          className={cn(
+            "flex min-w-0 flex-col",
+            collapsed && "sidebar-label",
+          )}
+        >
           <span className="text-[15px] font-semibold leading-tight tracking-tight text-fg">
             EchoGPT
           </span>
-          <span className="truncate text-[11px] leading-tight text-fg-3">38+ models, one chat</span>
+          <span className="truncate text-[11px] leading-tight text-fg-3">
+            38+ models, one chat
+          </span>
         </div>
+        {onToggleCollapse ? (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            aria-expanded={!collapsed}
+            aria-controls="echo-sidebar-nav"
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className={cn(
+              "focus-ring flex size-7 shrink-0 items-center justify-center rounded-md text-fg-3 transition-colors hover:bg-brand/10 hover:text-fg",
+              collapsed ? "mt-0.5" : "ml-auto",
+            )}
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="size-3.5" aria-hidden="true" />
+            ) : (
+              <PanelLeftClose className="size-3.5" aria-hidden="true" />
+            )}
+            <span className="sr-only">
+              {collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            </span>
+          </button>
+        ) : null}
       </div>
 
-      <div className="px-2 pb-1">
+      <div className={cn("px-2 pb-1", collapsed && "flex justify-center px-0")}>
         <button
           id="new-chat-button"
           type="button"
@@ -311,28 +407,46 @@ export function SidebarContent({
             startNewChat();
             onNavigate?.();
           }}
-          className="focus-ring flex w-full items-center gap-2 rounded-md bg-brand px-3 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_-4px_var(--echo-brand-glow)] transition-colors hover:bg-brand-hover"
+          title="New Chat"
+          className={cn(
+            "focus-ring flex items-center gap-2 rounded-md bg-brand text-sm font-semibold text-white shadow-[0_0_20px_-4px_var(--echo-brand-glow)] transition-colors hover:bg-brand-hover",
+            collapsed ? "size-9 justify-center p-0" : "w-full px-3 py-2.5",
+          )}
         >
           <Plus className="size-4 shrink-0" aria-hidden="true" />
-          New Chat
+          {collapsed ? <span className="sr-only">New Chat</span> : "New Chat"}
         </button>
       </div>
 
       <ScrollArea className="sidebar-scrollbar min-h-0 flex-1 pb-2">
-        <NavGroup title="Engagement" items={ENGAGEMENT} />
-        <ConversationList onNavigate={onNavigate} />
-        <NavGroup title={"Help & Support"} items={SUPPORT} />
+        <div id="echo-sidebar-nav">
+          <NavGroup title="Engagement" items={ENGAGEMENT} collapsed={collapsed} />
+          <ConversationList onNavigate={onNavigate} />
+          <NavGroup title="Help & Support" items={SUPPORT} collapsed={collapsed} />
+        </div>
       </ScrollArea>
 
       <div className="pb-safe">
         <UsageSummary />
-        <ProCard />
-        <SidebarFooter />
+        <ProCard collapsed={collapsed} />
+        <SidebarFooter collapsed={collapsed} />
       </div>
     </nav>
   );
 }
 
 export function DesktopSidebar() {
-  return <SidebarContent className="hidden w-[280px] shrink-0 border-r border-line lg:flex xl:w-[320px]" />;
+  const collapsed = useSidebarCollapsed();
+
+  const toggleCollapse = useCallback(() => {
+    setSidebarCollapsed(!collapsed);
+  }, [collapsed]);
+
+  return (
+    <SidebarContent
+      className="sidebar-shell hidden w-[280px] shrink-0 border-r border-line lg:flex xl:w-[320px]"
+      collapsed={collapsed}
+      onToggleCollapse={toggleCollapse}
+    />
+  );
 }

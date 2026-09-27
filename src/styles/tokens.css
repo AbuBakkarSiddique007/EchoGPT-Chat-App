@@ -108,6 +108,12 @@
   --scrollbar-size: 8px;
   --scrollbar-thumb: color-mix(in srgb, var(--echo-brand-400) 55%, transparent);
   --scrollbar-thumb-hover: color-mix(in srgb, var(--echo-brand-400) 80%, transparent);
+
+  /* Icon-rail width for the collapsed desktop sidebar. 68px holds a 44px
+     minimum touch target plus breathing room on each side. */
+  --sidebar-rail-width: 68px;
+  --sidebar-collapse-duration: 260ms;
+  --sidebar-collapse-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 [data-theme="light"] {

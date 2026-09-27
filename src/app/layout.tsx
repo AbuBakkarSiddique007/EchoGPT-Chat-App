@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { NO_FLASH_SCRIPT } from "@/lib/theme";
+import { SIDEBAR_NO_FLASH_SCRIPT } from "@/lib/sidebar-pref";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: NO_FLASH_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SIDEBAR_NO_FLASH_SCRIPT }} />
       </head>
       <body className="min-h-full">
         <ThemeProvider>

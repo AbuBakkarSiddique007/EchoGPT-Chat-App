@@ -186,6 +186,65 @@
   .pt-safe {
     padding-top: var(--safe-top);
   }
+
+  /* Collapsible desktop sidebar. The pre-paint script sets data-sidebar on
+     <html> before first paint, so the rail width is correct from the very
+     first frame and never animates in from full width. */
+  .sidebar-shell {
+    overflow: hidden;
+    transition: width var(--sidebar-collapse-duration) var(--sidebar-collapse-ease);
+  }
+
+  /* Going visible lets the theme menu open beside the rail instead of being
+     clipped by it, and the stacking context keeps it above the message
+     column. Safe because every collapsed child is either 1px or centred
+     within the rail width. */
+  html[data-sidebar="collapsed"] .sidebar-shell {
+    position: relative;
+    z-index: 20;
+    width: var(--sidebar-rail-width);
+    overflow: visible;
+  }
+
+  /* Rail-only decorations are hidden by default everywhere, including the
+     mobile drawer, which never has a rail. */
+  .sidebar-rail-only {
+    display: none;
+  }
+
+  /* Every rule below is scoped to .sidebar-shell on purpose. The collapsed
+     flag lives on <html> so the pre-paint script can apply it before the
+     sidebar exists, which means an unscoped selector would also match the
+     mobile drawer and clip its labels to icons. */
+  html[data-sidebar="collapsed"] .sidebar-shell .sidebar-rail-only {
+    display: block;
+  }
+
+  /* Text keeps its accessible name when the rail hides it visually, so screen
+     readers still announce every destination. */
+  html[data-sidebar="collapsed"] .sidebar-shell .sidebar-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Interactive blocks are removed rather than visually hidden: a clipped
+     search field or conversation row would stay in the tab order while being
+     invisible. */
+  html[data-sidebar="collapsed"] .sidebar-shell .sidebar-collapse-hide {
+    display: none;
+  }
+
+  html[data-sidebar="collapsed"] .sidebar-shell .sidebar-icon-row {
+    justify-content: center;
+    padding-inline: 0;
+  }
 }
 
 /* One scrollbar treatment for every scrollable region. Applied to native
