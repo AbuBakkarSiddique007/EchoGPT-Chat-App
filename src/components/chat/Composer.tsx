@@ -110,7 +110,7 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
           type="button"
           aria-disabled="true"
           title="Attachments — coming soon"
-          className="focus-ring cursor-not-allowed rounded-md p-1.5 text-fg-2 opacity-60 transition-colors hover:bg-brand/10"
+          className="focus-ring cursor-not-allowed rounded-md p-1.5 text-fg-3 transition-colors hover:bg-brand/10"
         >
           <Paperclip className="size-4" aria-hidden="true" />
           <span className="sr-only">Attach a file</span>
@@ -149,7 +149,7 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
                     role="menuitem"
                     aria-disabled="true"
                     title="Model switching — coming soon"
-                    className="cursor-not-allowed rounded-md px-2.5 py-1.5 text-[12.5px] text-fg-2 opacity-70"
+                    className="cursor-not-allowed rounded-md px-2.5 py-1.5 text-[12.5px] text-fg-3"
                   >
                     {model}
                   </div>
@@ -163,7 +163,7 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
           type="button"
           aria-disabled="true"
           title="Prompt options — coming soon"
-          className="focus-ring cursor-not-allowed rounded-md p-1.5 text-fg-2 opacity-60 transition-colors hover:bg-brand/10"
+          className="focus-ring cursor-not-allowed rounded-md p-1.5 text-fg-3 transition-colors hover:bg-brand/10"
         >
           <SlidersHorizontal className="size-4" aria-hidden="true" />
           <span className="sr-only">Prompt options</span>
@@ -181,7 +181,7 @@ export function Composer({ onSend }: { onSend?: (text: string) => void }) {
             type="button"
             aria-disabled="true"
             title="Stop generating — streaming connects in a later part"
-            className="focus-ring grid size-9 shrink-0 cursor-not-allowed place-items-center rounded-full border border-line bg-surface-2 text-fg-2 opacity-60"
+            className="focus-ring grid size-9 shrink-0 cursor-not-allowed place-items-center rounded-full border border-line bg-surface-2 text-fg-3"
           >
             <Square className="size-3.5" aria-hidden="true" />
             <span className="sr-only">Stop generating</span>

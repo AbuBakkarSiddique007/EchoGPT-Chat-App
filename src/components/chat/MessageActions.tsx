@@ -16,7 +16,7 @@ function ActionButton({
       type="button"
       aria-disabled="true"
       title={`${label} — coming soon`}
-      className="focus-ring flex size-6 cursor-not-allowed items-center justify-center rounded text-fg-dim opacity-70 transition-colors hover:bg-brand/10"
+      className="focus-ring flex size-6 cursor-not-allowed items-center justify-center rounded text-fg-3 transition-colors hover:bg-brand/10"
     >
       {children}
       <span className="sr-only">{label} — coming soon</span>

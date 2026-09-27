@@ -3,6 +3,7 @@
 import {
   ArrowUpRight,
   Briefcase,
+  Check,
   Clapperboard,
   CreditCard,
   FileText,
@@ -23,11 +24,14 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ConversationList } from "@/components/conversations/ConversationList";
 import { useChatStore } from "@/components/providers/ChatProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { THEME_OPTIONS } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -78,7 +82,7 @@ function NavRow({ item }: { item: NavItem }) {
         type="button"
         aria-disabled="true"
         title={`${label} — coming soon`}
-        className="focus-ring group flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm text-fg-2 opacity-60 transition-colors"
+        className="focus-ring group flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm text-fg-3 transition-colors"
       >
         <Icon className="size-4 shrink-0" aria-hidden="true" />
         <NavLabel label={label} compact={compact} />
@@ -163,7 +167,7 @@ function ProCard() {
         type="button"
         aria-disabled="true"
         title={`Upgrade — coming soon. ${PRO_PITCH}`}
-        className="focus-ring flex shrink-0 cursor-not-allowed items-center gap-0.5 rounded-md bg-brand/40 px-2 py-1 text-[11px] font-medium text-fg opacity-70"
+        className="focus-ring flex shrink-0 cursor-not-allowed items-center gap-0.5 rounded-md bg-brand/40 px-2 py-1 text-[11px] font-medium text-fg-2"
       >
         Upgrade
         <ArrowUpRight className="size-3" aria-hidden="true" />
@@ -175,6 +179,28 @@ function ProCard() {
 }
 
 function SidebarFooter() {
+  const { preference, resolved, setPreference } = useTheme();
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
   return (
     <div className="flex items-center gap-1 border-t border-line px-2 py-1.5">
       <button
@@ -195,15 +221,51 @@ function SidebarFooter() {
         <span className="sr-only">sign in to sync history — coming soon</span>
       </button>
 
-      <button
-        type="button"
-        aria-disabled="true"
-        title="Theme — coming soon"
-        className="focus-ring flex size-7 shrink-0 cursor-not-allowed items-center justify-center rounded-md text-fg-2 transition-colors hover:bg-brand/5"
-      >
-        <SunMoon className="size-3.5" aria-hidden="true" />
-        <span className="sr-only">Theme — coming soon</span>
-      </button>
+      <div ref={containerRef} className="relative shrink-0">
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-haspopup="menu"
+          title="Theme"
+          className="focus-ring flex size-7 items-center justify-center rounded-md text-fg-2 transition-colors hover:bg-brand/5"
+        >
+          <SunMoon className="size-3.5" aria-hidden="true" />
+          <span className="sr-only">Theme, currently {resolved}</span>
+        </button>
+
+        {open ? (
+          <div
+            role="menu"
+            aria-label="Theme"
+            className="absolute right-0 bottom-full z-30 mb-1 w-40 rounded-lg border border-line bg-surface-elev/95 p-1 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.8)] backdrop-blur"
+          >
+            {THEME_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                role="menuitemradio"
+                aria-checked={preference === option.id}
+                onClick={() => {
+                  setPreference(option.id);
+                  setOpen(false);
+                }}
+                className="focus-ring flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] text-fg-2 transition-colors hover:bg-brand/10 aria-checked:text-fg aria-checked:font-medium"
+              >
+                <Check
+                  className={cn(
+                    "size-3.5 shrink-0 text-brand-text",
+                    preference === option.id ? "opacity-100" : "opacity-0",
+                  )}
+                  aria-hidden="true"
+                />
+                {option.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+
       <button
         type="button"
         aria-disabled="true"
