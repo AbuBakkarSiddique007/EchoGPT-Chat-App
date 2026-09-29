@@ -189,7 +189,7 @@ function NavGroup({
 
 const USAGE_USED = 18;
 const USAGE_LIMIT = 50;
-const PRO_PITCH = "38+ frontier models, priority routing, and longer context.";
+const PRO_PITCH = "41+ frontier models, priority routing, and longer context.";
 
 function UsageSummary() {
   const pct = Math.round((USAGE_USED / USAGE_LIMIT) * 100);
@@ -201,7 +201,7 @@ function UsageSummary() {
       </span>
       <div
         role="img"
-        aria-label={`${USAGE_USED} of ${USAGE_LIMIT} messages used this month`}
+        aria-label={`Sample usage: ${USAGE_USED} of ${USAGE_LIMIT} messages this month`}
         className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-line"
       >
         <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
@@ -398,7 +398,7 @@ export function SidebarContent({
             EchoGPT
           </span>
           <span className="truncate text-[11px] leading-tight text-fg-3">
-            38+ models, one chat
+            41+ models, one chat
           </span>
         </div>
         {onToggleCollapse ? (
