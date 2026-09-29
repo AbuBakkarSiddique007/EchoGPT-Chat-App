@@ -16,7 +16,6 @@ export function formatMessageTime(iso: string): string {
   return timeFormatter.format(date);
 }
 
-/** Short calendar label, so older messages are not read as today's. */
 export function formatMessageDate(iso: string, now: Date = new Date()): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
