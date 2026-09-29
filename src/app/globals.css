@@ -18,12 +18,11 @@
  * Dark is the default theme, so the `dark:` variant keys off an explicit
  * data-theme="dark" that layout.tsx puts on <html>. Keeping it explicit (rather
  * than relying on the attribute's absence) is what makes base-ui's dark:
- * utilities resolve. Part 15 adds the control that swaps this attribute.
+ * utilities resolve.
  */
 @custom-variant dark (&:is([data-theme="dark"] *));
 
 @theme inline {
-  /* EchoGPT tokens */
   --color-app: var(--bg-app);
   --color-surface: var(--bg-surface);
   --color-surface-2: var(--bg-surface-elev);
@@ -139,8 +138,6 @@
     font-feature-settings: "ss01", "cv01";
   }
 
-  /* Honour the OS reduced-motion setting: no entrance, drawer, or streaming
-     animation may run. Part 12 relies on this for its acceptance check. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -179,7 +176,7 @@
     outline-offset: var(--focus-ring-offset);
   }
 
-  /* Mobile safe areas, for the sticky composer in Part 10. */
+  /* Mobile safe areas, for the sticky composer. */
   .pb-safe {
     padding-bottom: var(--safe-bottom);
   }
