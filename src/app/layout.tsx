@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "EchoGPT Chat",
   description:
-    "Chat with 38+ frontier AI models in one calm workspace. Multi-model routing, deep reasoning, and web intelligence.",
+    "Chat with 41+ frontier AI models in one calm workspace. Multi-model routing, deep reasoning, and web intelligence.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
