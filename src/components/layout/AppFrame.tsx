@@ -12,7 +12,7 @@ export function AppFrame({ children }: { children: ReactNode }) {
           className={cn(
             "flex min-h-0 w-full flex-col overflow-hidden border border-line bg-surface/85 backdrop-blur-xl",
             "sm:rounded-2xl",
-            "lg:rounded-[28px] lg:shadow-[var(--shadow-lg)]",
+            "lg:rounded-[28px] lg:shadow-[var(--echo-shadow-lg)]",
           )}
         >
           {children}
